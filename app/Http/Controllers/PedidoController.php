@@ -7,6 +7,7 @@ use App\Models\Pedido;
 use Illuminate\Http\Request;
 use App\Models\PedidoProducto;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\PedidoCollection;
 
 class PedidoController extends Controller
 {
@@ -15,7 +16,8 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        //
+        // return new PedidoCollection(Pedido::where('estado', 0)->get());
+        return new PedidoCollection(Pedido::with('user')->with('productos')->where('estado', 0)->get());
     }
 
     /**
@@ -53,10 +55,6 @@ class PedidoController extends Controller
         return [
             'message' => 'Pedido realizado correctamente, estara listo en unos minutos',
         ];
-        // return [
-        //     'message' => 'Realizando pedido ' . $pedido->id,
-        //     'productos' => $request->productos,
-        // ];
     }
 
     /**
@@ -72,7 +70,10 @@ class PedidoController extends Controller
      */
     public function update(Request $request, Pedido $pedido)
     {
-        //
+        $pedido->estado = 1;
+        $pedido->save();
+
+        return [ 'pedido' => $pedido];
     }
 
     /**
